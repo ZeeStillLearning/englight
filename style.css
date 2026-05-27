@@ -1,0 +1,83 @@
+/* EngLight — Shared Stylesheet
+   Custom styles extracted from all 18 pages.
+   Tailwind utility classes are handled by the CDN script in each HTML file.
+   This file contains only the custom/component-level styles.
+*/
+
+/* ──────────────────────────────────────────
+   Global
+────────────────────────────────────────── */
+* { font-family: 'Poppins', sans-serif; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #1B3F8B; border-radius: 3px; }
+
+/* ──────────────────────────────────────────
+   Landing Page & Auth backgrounds
+────────────────────────────────────────── */
+.hero-bg  { background: linear-gradient(135deg, #0f2460 0%, #1B3F8B 45%, #2952B3 100%); }
+.cta-bg   { background: linear-gradient(135deg, #0f2460 0%, #1B3F8B 60%, #2952B3 100%); }
+.hero-panel { background: linear-gradient(135deg, #0f2460 0%, #1B3F8B 50%, #2952B3 100%); }
+
+/* ──────────────────────────────────────────
+   Landing page utilities
+────────────────────────────────────────── */
+.step-line { background: linear-gradient(90deg, #1B3F8B, #F5A623); }
+
+.gradient-text {
+  background: linear-gradient(135deg, #fff 30%, #F5A623 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ──────────────────────────────────────────
+   Animations
+────────────────────────────────────────── */
+@keyframes float     { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+@keyframes fadeUp    { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+@keyframes badgePulse{ 0%,100%{box-shadow:0 0 0 0 rgba(245,166,35,.5)} 50%{box-shadow:0 0 0 8px rgba(245,166,35,0)} }
+@keyframes floatSm   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+.floating      { animation: float    4s ease-in-out infinite; }
+.floating-sm   { animation: floatSm  3s ease-in-out infinite; }
+.fade-up       { opacity:0; animation: fadeUp .6s ease forwards; }
+.badge-pulse   { animation: badgePulse 2s ease infinite; }
+
+.d1{animation-delay:.1s} .d2{animation-delay:.2s} .d3{animation-delay:.3s}
+.d4{animation-delay:.4s} .d5{animation-delay:.5s} .d6{animation-delay:.6s}
+
+/* ──────────────────────────────────────────
+   Card hover effects
+────────────────────────────────────────── */
+.price-card { transition: transform .25s ease, box-shadow .25s ease; }
+.price-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 24px 60px rgba(27,63,139,.18); }
+
+.feat-card { transition: transform .2s ease, box-shadow .2s ease; }
+.feat-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(27,63,139,.12); }
+
+/* ──────────────────────────────────────────
+   Navigation glass effect (Landing)
+────────────────────────────────────────── */
+.nav-glass {
+  background: rgba(255,255,255,.97);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(27,63,139,.08);
+}
+
+/* ──────────────────────────────────────────
+   Mobile menu transition
+────────────────────────────────────────── */
+#mobile-menu {
+  transition: max-height .3s ease, opacity .3s ease;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+#mobile-menu.open { max-height: 400px; opacity: 1; }
+
+/* ──────────────────────────────────────────
+   Auth page body background
+────────────────────────────────────────── */
+body.auth-page { background-color: #F4F7FF; }
