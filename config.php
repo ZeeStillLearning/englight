@@ -17,6 +17,9 @@ define('APP_VERSION', '1.0.0');
 /**
  * Returns a singleton PDO instance.
  */
+define('SESSION_TIMEOUT',     300);           // 5 menit = 300 detik
+define('ACTIVITY_COOKIE_NAME', 'el_last_active');
+
 function db(): PDO {
     static $pdo = null;
     if ($pdo === null) {

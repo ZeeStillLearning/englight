@@ -8,6 +8,12 @@ $errors   = [];
 $success  = '';
 $active   = isset($_GET['tab']) && $_GET['tab'] === 'register' ? 'register' : 'login';
 
+// Pesan timeout dari cookie
+$timeout_msg = '';
+if (isset($_GET['timeout']) && $_GET['timeout'] == '1') {
+    $timeout_msg = 'Sesi kamu telah berakhir karena tidak aktif selama 5 menit. Silakan login kembali.';
+}
+
 // ── Handle LOGIN ─────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'login') {
     $active = 'login';
@@ -28,6 +34,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $_SESSION['user_role']  = $user['role'];
             $_SESSION['user_plan']  = $user['plan'];
             $_SESSION['user_xp']    = $user['xp'];
+
+            // Set cookie aktivitas pertama kali saat login
+            refresh_activity_cookie();
 
             if ($user['role'] === 'admin') {
                 header('Location: admin/admin-dashboard.php'); exit;
@@ -104,6 +113,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
       </div>
 
       <!-- Alerts -->
+      <?php if ($timeout_msg): ?>
+        <div class="mb-4 px-4 py-3 rounded-xl text-sm bg-orange-100 text-orange-700 border border-orange-200 flex items-start gap-2">
+          <span class="text-base">⏱️</span>
+          <p><?= e($timeout_msg) ?></p>
+        </div>
+      <?php endif; ?>
       <?php if (!empty($errors)): ?>
         <div class="mb-4 px-4 py-3 rounded-xl text-sm bg-red-100 text-red-700 border border-red-200">
           <?php foreach ($errors as $err): ?><p><?= e($err) ?></p><?php endforeach; ?>
