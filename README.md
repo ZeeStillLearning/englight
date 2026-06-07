@@ -1,135 +1,240 @@
-# EngLight — PHP Native Application
+# EngLight — Platform Pembelajaran Bahasa Inggris
 
-Versi dinamis berbasis PHP + MySQL dari proyek statis "EngLight".
+Platform pembelajaran bahasa Inggris berbasis **PHP Native + MySQL** dengan fitur materi, latihan soal, tryout TOEFL, forum diskusi, e-book, dan speaking practice.
 
 ---
 
-## 📁 Struktur Direktori
+## Requirements
+
+| Software        | Versi Minimum |
+| --------------- | ------------- |
+| PHP             | 8.0+          |
+| MySQL           | 5.7+          |
+| Apache          | 2.4+          |
+| XAMPP / Laragon | Versi terbaru |
+
+---
+
+## Setup — XAMPP (Windows)
+
+### Step 1 — Clone Repository
+
+Buka **CMD** atau **Git Bash**, jalankan:
+
+```bash
+cd C:\xampp\htdocs
+git clone https://github.com/USERNAME/englight.git
+```
+
+Pastikan struktur foldernya:
 
 ```
-englight/
-├── .htaccess                   # Apache security rules
-├── config.php                  # PDO connection & helpers (db, e, db_row, db_all)
-├── database.sql                # Schema + seed data — import ke phpMyAdmin
-│
-├── index.php                   # Landing page (publik)
-├── login.php                   # Login + Register (tab switching, satu file)
-├── register.php                # Redirect → login.php?tab=register
-├── logout.php                  # Hapus sesi & redirect ke login
-│
-├── dashboard.php               # User: halaman utama setelah login
-├── materi-user.php             # User: daftar & tandai selesai materi
-├── latihansoal-user.php        # User: latihan soal adaptif + riwayat
-├── tryout-user.php             # User: daftar tryout + riwayat
-├── tryout-start.php            # User: sesi tryout aktif dengan countdown timer
-├── speaking-user.php           # User: speaking practice (UI + recorder)
-├── forum-user.php              # User: forum diskusi (CRUD post + reply + upvote)
-├── ebook-user.php              # User: galeri e-book
-├── membership-user.php         # User: paket & riwayat pembayaran
-│
-├── style.css                   # Stylesheet asli (tidak diubah)
-├── script.js                   # JavaScript asli (tidak diubah)
-│
-├── includes/
-│   ├── auth.php                # Session helpers (require_login, require_admin, flash)
-│   ├── header_public.php       # <head> + navbar untuk halaman publik
-│   ├── footer_public.php       # Footer publik + JS init
-│   ├── sidebar_user.php        # Sidebar navigasi pengguna
-│   └── sidebar_admin.php       # Sidebar navigasi admin
-│
-├── admin/
-│   ├── admin-dashboard.php     # Admin: ringkasan statistik
-│   ├── materi-admin.php        # Admin: CRUD materi
-│   ├── tambah-materi.php       # Admin: form tambah/edit materi (dengan upload file)
-│   ├── banksoal-admin.php      # Admin: CRUD bank soal
-│   ├── tambah-soal.php         # Admin: form tambah/edit soal
-│   ├── tryout-admin.php        # Admin: CRUD tryout
-│   ├── tambah-tryout.php       # Admin: form tambah/edit tryout
-│   ├── kelola-soal-tryout.php  # Admin: pivot — assign/remove soal ke tryout
-│   ├── ebook-admin.php         # Admin: CRUD e-book (dengan upload PDF)
-│   ├── tambah-ebook.php        # Admin: form tambah/edit e-book (color picker)
-│   ├── pengguna-admin.php      # Admin: CRUD pengguna (toggle aktif, ubah plan)
-│   └── log-admin.php           # Admin: audit log dengan filter & purge
-│
-└── uploads/
-    ├── materi/                 # Video & PDF materi yang diunggah
-    └── ebook/                  # PDF e-book yang diunggah
+C:\xampp\htdocs\englight\index.php
 ```
 
 ---
 
-## ⚙️ Instalasi
+### Step 2 — Buat Database
 
-### 1. Import Database
-- Buka **phpMyAdmin** → tab **Import**
-- Pilih file `database.sql` → klik **Go**
-- Database `englight_db` otomatis terbuat beserta tabelnya
+1. Buka **XAMPP Control Panel** → klik **Start** pada **Apache** dan **MySQL**
+2. Buka browser → pergi ke `http://localhost/phpmyadmin`
+3. Klik **New** di sidebar kiri
+4. Isi nama database: `englight_db` → klik **Create**
+5. Klik database `englight_db` yang baru dibuat
+6. Klik tab **Import** → klik **Choose File**
+7. Pilih file `C:\xampp\htdocs\englight\database.sql`
+8. Scroll bawah → klik **Go**
 
-### 2. Konfigurasi Koneksi
-Edit `config.php` sesuaikan:
+Tunggu hingga muncul pesan sukses hijau
+
+---
+
+### Step 3 — Konfigurasi Koneksi
+
+Buka file `C:\xampp\htdocs\englight\config.php` dengan text editor:
+
 ```php
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'englight_db');
-define('DB_USER', 'root');       // ← sesuaikan
-define('DB_PASS', '');           // ← sesuaikan
-define('APP_URL', 'http://localhost/englight');  // ← sesuaikan
+define('DB_USER', 'root');
+define('DB_PASS', '');        // XAMPP default: kosong
+define('APP_URL', 'http://localhost/englight');
 ```
 
-### 3. Permission Upload Folder
+> **Catatan XAMPP:** Password MySQL default XAMPP adalah **kosong** (tidak ada password). Jika kamu sudah set password MySQL sendiri, isi di `DB_PASS`.
+
+---
+
+### Step 4 — Buat Folder Upload
+
+Buka **CMD** dan jalankan:
+
 ```bash
-chmod 755 uploads/materi
-chmod 755 uploads/ebook
+cd C:\xampp\htdocs\englight
+mkdir uploads\materi
+mkdir uploads\ebook
 ```
 
-### 4. Jalankan Aplikasi
-Letakkan folder `englight/` di dalam `htdocs/` (XAMPP) atau `www/` (WAMP).
-Buka: `http://localhost/englight`
+---
+
+### Step 5 — Buka Aplikasi
+
+```
+http://localhost/englight
+```
 
 ---
 
-## 🔑 Akun Default
+## Setup — Laragon (Windows)
 
-| Role  | Email                 | Password     |
-|-------|-----------------------|--------------|
-| Admin | admin@englight.id     | Admin@12345  |
-| User  | budi@student.com      | User@12345   |
+### Step 1 — Clone Repository
 
-> **Penting:** Ganti password default setelah instalasi pertama!
-
----
-
-## 🛡️ Keamanan yang Diterapkan
-
-| Metode             | Implementasi |
-|--------------------|--------------|
-| SQL Injection      | PDO Prepared Statements di semua query |
-| XSS                | `htmlspecialchars()` via helper `e()` di semua output |
-| CSRF (basic)       | Session-based redirect setelah setiap POST |
-| Password Hashing   | `password_hash()` dengan `PASSWORD_BCRYPT`, cost 12 |
-| Session Fixation   | `session_regenerate_id(true)` saat login |
-| Akses Admin        | `require_admin()` di setiap halaman admin |
-| File Upload        | Validasi ekstensi + ukuran + `move_uploaded_file()` |
-| Directory Listing  | Dinonaktifkan via `Options -Indexes` di `.htaccess` |
-| Security Headers   | X-Frame-Options, X-XSS-Protection, NOSNIFF via `.htaccess` |
-| Sensitive File     | `config.php` dan `includes/` diblokir dari akses langsung |
+```bash
+cd C:\laragon\www
+git clone https://github.com/USERNAME/englight.git
+```
 
 ---
 
-## 🗄️ Skema Database (14 Tabel)
+### Step 2 — Buat Database
 
-| Tabel                   | Fungsi |
-|-------------------------|--------|
-| `users`                 | Akun pengguna & admin |
-| `memberships`           | Riwayat langganan & pembayaran |
-| `materi`                | Konten pembelajaran (video/pdf/text) |
-| `user_materi_progress`  | Tracking progres tiap user per materi |
-| `questions`             | Bank soal MCQ |
-| `latihan_sessions`      | Riwayat sesi latihan soal |
-| `tryouts`               | Paket tryout TOEFL |
-| `tryout_questions`      | Pivot: soal yang masuk ke tryout |
-| `tryout_sessions`       | Riwayat percobaan tryout user |
-| `ebooks`                | Koleksi e-book |
-| `forum_posts`           | Postingan forum |
-| `forum_replies`         | Balasan forum |
-| `speaking_sessions`     | Riwayat sesi speaking AI |
-| `admin_logs`            | Audit trail semua aksi admin |
+1. Buka **Laragon** → klik **Start All**
+2. Klik ikon Laragon di tray → **Database** → **phpMyAdmin**
+3. Klik **New** → nama: `englight_db` → **Create**
+4. Klik `englight_db` → tab **Import** → pilih `database.sql` → **Go**
+
+---
+
+### Step 3 — Konfigurasi Koneksi
+
+Buka `C:\laragon\www\englight\config.php`:
+
+```php
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'englight_db');
+define('DB_USER', 'root');
+define('DB_PASS', '');        // Laragon default: kosong
+define('APP_URL', 'http://localhost/englight');
+```
+
+---
+
+### Step 4 — Buat Folder Upload
+
+```bash
+cd C:\laragon\www\englight
+mkdir uploads\materi
+mkdir uploads\ebook
+```
+
+---
+
+### Step 5 — Buka Aplikasi
+
+```
+http://localhost/englight
+```
+
+---
+
+## Akun Default
+
+Setelah import database, jalankan script reset password dulu:
+
+**Buka browser:**
+
+```
+http://localhost/englight/reset-password.php
+```
+
+Tunggu muncul pesan sukses, lalu **hapus file** `reset-password.php`.
+
+Kemudian login dengan:
+
+| Role      | Email               | Password      |
+| --------- | ------------------- | ------------- |
+| **Admin** | `admin@englight.id` | `Admin@12345` |
+| **User**  | `budi@student.com`  | `User@12345`  |
+
+---
+
+## Struktur Folder
+
+```
+englight/
+├── config.php              ← Konfigurasi database & app
+├── database.sql            ← Import ini ke phpMyAdmin
+├── reset-password.php      ← Jalankan sekali lalu hapus!
+├── index.php               ← Landing page
+├── login.php               ← Halaman login & register
+├── logout.php              ← Proses logout
+├── dashboard.php           ← Dashboard user
+├── materi-user.php         ← Halaman materi
+├── baca-materi.php         ← PDF/Video viewer
+├── latihansoal-user.php    ← Latihan soal
+├── tryout-user.php         ← Tryout TOEFL
+├── tryout-start.php        ← Sesi tryout aktif
+├── forum-user.php          ← Forum diskusi
+├── ebook-user.php          ← E-book
+├── speaking-user.php       ← Speaking practice
+├── membership-user.php     ← Halaman membership
+├── includes/
+│   ├── auth.php            ← Session & cookie timeout
+│   ├── header_public.php   ← Navbar publik
+│   ├── footer_public.php   ← Footer publik
+│   ├── sidebar_user.php    ← Sidebar user
+│   └── sidebar_admin.php   ← Sidebar admin
+├── admin/
+│   ├── admin-dashboard.php
+│   ├── materi-admin.php
+│   ├── tambah-materi.php
+│   ├── banksoal-admin.php
+│   ├── tambah-soal.php
+│   ├── tryout-admin.php
+│   ├── tambah-tryout.php
+│   ├── kelola-soal-tryout.php
+│   ├── ebook-admin.php
+│   ├── tambah-ebook.php
+│   ├── pengguna-admin.php
+│   └── log-admin.php
+└── uploads/
+    ├── materi/             ← Buat folder ini manual!
+    └── ebook/              ← Buat folder ini manual!
+```
+
+---
+
+## Fitur Keamanan
+
+| Fitur            | Keterangan                                   |
+| ---------------- | -------------------------------------------- |
+| Password Hashing | BCrypt cost 12 via `password_hash()`         |
+| SQL Injection    | Prepared Statements PDO di semua query       |
+| XSS Prevention   | `htmlspecialchars()` di semua output         |
+| Session Security | `session_regenerate_id()` saat login         |
+| Cookie Timeout   | Auto logout setelah **5 menit** tidak aktif  |
+| Access Control   | RBAC — `require_login()` & `require_admin()` |
+
+---
+
+## Troubleshooting
+
+**Error: Table not found / Base table doesn't exist**
+→ Database belum diimport. Ulangi Step 2.
+
+**Error: Access denied for user 'root'**
+→ Cek `DB_PASS` di `config.php`. XAMPP/Laragon default kosong.
+
+**Error: No such file or directory (uploads)**
+→ Folder `uploads/materi` dan `uploads/ebook` belum dibuat. Ulangi Step 4.
+
+**Halaman putih / blank**
+→ Pastikan Apache & MySQL sudah **Start** di XAMPP/Laragon.
+
+**Login tidak bisa / password salah**
+→ Jalankan `http://localhost/englight/reset-password.php` dulu.
+
+**URL Not Found**
+→ Pastikan folder project bernama `englight` (huruf kecil semua).
+
+---

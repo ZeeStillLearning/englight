@@ -1,0 +1,4 @@
+uploads/materi/*
+uploads/ebook/*
+!uploads/materi/.gitkeep
+!uploads/ebook/.gitkeep

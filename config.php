@@ -17,7 +17,7 @@ define('APP_VERSION', '1.0.0');
 /**
  * Returns a singleton PDO instance.
  */
-define('SESSION_TIMEOUT',     300);           // 5 menit = 300 detik
+define('SESSION_TIMEOUT',     3000);           // 5 menit = 300 detik
 define('ACTIVITY_COOKIE_NAME', 'el_last_active');
 
 function db(): PDO {
@@ -35,7 +35,6 @@ function db(): PDO {
         try {
             $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
         } catch (PDOException $e) {
-            // In production, log the error rather than display it
             error_log('DB Connection failed: ' . $e->getMessage());
             die('<div style="font-family:sans-serif;padding:2rem;color:#c00">
                     <strong>Database connection error.</strong> Please contact the administrator.
