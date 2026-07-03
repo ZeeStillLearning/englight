@@ -14,7 +14,7 @@ if (isset($_GET['timeout']) && $_GET['timeout'] == '1') {
     $timeout_msg = 'Sesi kamu telah berakhir karena tidak aktif selama 5 menit. Silakan login kembali.';
 }
 
-// ── Handle LOGIN ─────────────────────────────────────────────
+// ── Handle LOGIN 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'login') {
     $active = 'login';
     $email    = trim($_POST['email']    ?? '');
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-// ── Handle REGISTER ──────────────────────────────────────────
+// ── Handle REGISTER 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'register') {
     $active   = 'register';
     $name     = trim($_POST['name']     ?? '');

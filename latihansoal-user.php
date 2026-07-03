@@ -7,15 +7,22 @@ $user       = current_user();
 $valid_cats = ['listening','structure','reading'];
 $filter     = $_GET['category'] ?? '';
 
-// Handle quiz submission
+// ── Handle quiz submission ───────────────────────────────────
+// Sekarang validasi berdasarkan TEKS jawaban, bukan huruf a/b/c/d
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_quiz'])) {
-    $answers   = $_POST['answers'] ?? [];
-    $question_ids = array_keys($answers);
-    $correct   = 0;
+    $answer_texts = $_POST['answer_text'] ?? []; // [question_id => teks jawaban yang dipilih]
+    $question_ids = array_keys($answer_texts);
+    $correct      = 0;
 
     foreach ($question_ids as $qid) {
-        $q = db_row('SELECT correct_answer FROM questions WHERE id = ?', [(int)$qid]);
-        if ($q && strtolower($q['correct_answer']) === strtolower($answers[$qid])) {
+        $q = db_row('SELECT correct_answer, option_a, option_b, option_c, option_d FROM questions WHERE id = ?', [(int)$qid]);
+        if (!$q) continue;
+
+        $correct_text = $q['option_' . $q['correct_answer']];
+        $given_text   = $answer_texts[$qid];
+
+        // Bandingkan TEKS jawaban, bukan huruf — karena posisi sudah diacak di tampilan
+        if (trim($given_text) === trim($correct_text)) {
             $correct++;
         }
     }
@@ -28,7 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_quiz'])) {
             VALUES (?, ?, ?, ?, ?, NOW())',
            [$user['id'], $cat, $total, $correct, $score]);
 
-    // Award XP
     $xp = $correct * 5;
     if ($xp > 0) {
         db_run('UPDATE users SET xp = xp + ? WHERE id = ?', [$xp, $user['id']]);
@@ -36,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_quiz'])) {
     }
 
     set_flash('success', "Latihan selesai! Skor kamu: {$score}% ({$correct}/{$total} benar). +{$xp} XP!");
-    header('Location: latihansoal-user.php' . ($filter ? '?category=' . urlencode($filter) : ''));
+    header('Location: ' . APP_URL . '/latihansoal-user.php' . ($filter ? '?category=' . urlencode($filter) : ''));
     exit;
 }
 
@@ -49,6 +55,21 @@ if ($filter && in_array($filter, $valid_cats)) {
 }
 $sql_q  .= ' ORDER BY RAND() LIMIT 10';
 $questions = db_all($sql_q, $pq);
+
+// ── Acak urutan pilihan jawaban untuk tiap soal (server-side) ──
+// Supaya konsisten meski form di-render PHP, kita acak di sini lalu
+// simpan urutan teks ke dalam array untuk dirender.
+foreach ($questions as &$q) {
+    $opts = [
+        ['text' => $q['option_a'], 'is_correct' => $q['correct_answer'] === 'a'],
+        ['text' => $q['option_b'], 'is_correct' => $q['correct_answer'] === 'b'],
+        ['text' => $q['option_c'], 'is_correct' => $q['correct_answer'] === 'c'],
+        ['text' => $q['option_d'], 'is_correct' => $q['correct_answer'] === 'd'],
+    ];
+    shuffle($opts);
+    $q['shuffled_options'] = $opts;
+}
+unset($q);
 
 // Recent sessions
 $history = db_all('SELECT * FROM latihan_sessions WHERE user_id = ? ORDER BY started_at DESC LIMIT 5', [$user['id']]);
@@ -79,9 +100,9 @@ $active_page = 'latihan';
 
       <!-- Category Filter -->
       <div class="flex gap-2 flex-wrap">
-        <a href="latihansoal-user.php" class="px-4 py-2 rounded-xl text-sm font-semibold transition-all <?= !$filter ? 'bg-brand text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50' ?>">Semua</a>
+        <a href="<?= APP_URL ?>/latihansoal-user.php" class="px-4 py-2 rounded-xl text-sm font-semibold transition-all <?= !$filter ? 'bg-brand text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50' ?>">Semua</a>
         <?php foreach ($valid_cats as $cat): ?>
-          <a href="latihansoal-user.php?category=<?= urlencode($cat) ?>" class="px-4 py-2 rounded-xl text-sm font-semibold capitalize transition-all <?= $filter === $cat ? 'bg-brand text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50' ?>"><?= e(ucfirst($cat)) ?></a>
+          <a href="<?= APP_URL ?>/latihansoal-user.php?category=<?= urlencode($cat) ?>" class="px-4 py-2 rounded-xl text-sm font-semibold capitalize transition-all <?= $filter === $cat ? 'bg-brand text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50' ?>"><?= e(ucfirst($cat)) ?></a>
         <?php endforeach; ?>
       </div>
 
@@ -102,11 +123,18 @@ $active_page = 'latihan';
             <?= e($q['question_text']) ?>
           </p>
           <div class="space-y-3">
-            <?php foreach (['a','b','c','d'] as $opt): ?>
-              <?php $val = $q['option_' . $opt]; ?>
+            <?php foreach ($q['shuffled_options'] as $idx => $opt):
+              $opt_label = chr(97 + $idx); // a, b, c, d — hanya untuk label tampilan
+            ?>
               <label class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 cursor-pointer hover:bg-blue-50 hover:border-brand transition-all">
-                <input type="radio" name="answers[<?= (int)$q['id'] ?>]" value="<?= e($opt) ?>" class="w-4 h-4 text-brand" required>
-                <span class="text-sm text-gray-700"><strong class="text-brand uppercase"><?= $opt ?>.</strong> <?= e($val) ?></span>
+                <input type="radio"
+                       name="answer_text[<?= (int)$q['id'] ?>]"
+                       value="<?= e($opt['text']) ?>"
+                       class="w-4 h-4 text-brand" required>
+                <span class="text-sm text-gray-700">
+                  <strong class="text-brand uppercase"><?= strtoupper($opt_label) ?>.</strong>
+                  <?= e($opt['text']) ?>
+                </span>
               </label>
             <?php endforeach; ?>
           </div>

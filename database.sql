@@ -1,15 +1,9 @@
--- ============================================================
---  EngLight — Database Schema
---  Engine  : InnoDB | Charset: utf8mb4
--- ============================================================
+
 
 CREATE DATABASE IF NOT EXISTS englight_db
   CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE englight_db;
 
--- ----------------------------------------------------------------
--- 1. USERS
--- ----------------------------------------------------------------
 CREATE TABLE users (
     id           INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name         VARCHAR(150)                          NOT NULL,
@@ -24,9 +18,6 @@ CREATE TABLE users (
     updated_at   DATETIME                              NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ----------------------------------------------------------------
--- 2. MEMBERSHIP / SUBSCRIPTIONS
--- ----------------------------------------------------------------
 CREATE TABLE memberships (
     id           INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id      INT UNSIGNED                          NOT NULL,
@@ -42,9 +33,6 @@ CREATE TABLE memberships (
         ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ----------------------------------------------------------------
--- 3. MATERI (LEARNING MATERIAL)
--- ----------------------------------------------------------------
 CREATE TABLE materi (
     id           INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     title        VARCHAR(255)                          NOT NULL,
@@ -62,9 +50,6 @@ CREATE TABLE materi (
         ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ----------------------------------------------------------------
--- 4. USER MATERI PROGRESS
--- ----------------------------------------------------------------
 CREATE TABLE user_materi_progress (
     id           INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id      INT UNSIGNED NOT NULL,
@@ -76,9 +61,6 @@ CREATE TABLE user_materi_progress (
     CONSTRAINT fk_ump_materi FOREIGN KEY (materi_id) REFERENCES materi(id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ----------------------------------------------------------------
--- 5. BANK SOAL (QUESTION BANK)
--- ----------------------------------------------------------------
 CREATE TABLE questions (
     id             INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     question_text  TEXT                                                  NOT NULL,
@@ -98,9 +80,6 @@ CREATE TABLE questions (
         ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ----------------------------------------------------------------
--- 6. LATIHAN SOAL SESSIONS
--- ----------------------------------------------------------------
 CREATE TABLE latihan_sessions (
     id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id       INT UNSIGNED NOT NULL,
@@ -113,9 +92,6 @@ CREATE TABLE latihan_sessions (
     CONSTRAINT fk_ls_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ----------------------------------------------------------------
--- 7. TRYOUT
--- ----------------------------------------------------------------
 CREATE TABLE tryouts (
     id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     title           VARCHAR(255)  NOT NULL,
@@ -132,9 +108,6 @@ CREATE TABLE tryouts (
         ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ----------------------------------------------------------------
--- 8. TRYOUT ↔ QUESTIONS (pivot)
--- ----------------------------------------------------------------
 CREATE TABLE tryout_questions (
     tryout_id   INT UNSIGNED NOT NULL,
     question_id INT UNSIGNED NOT NULL,
@@ -144,9 +117,6 @@ CREATE TABLE tryout_questions (
     CONSTRAINT fk_tq_question FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ----------------------------------------------------------------
--- 9. TRYOUT SESSIONS (user attempts)
--- ----------------------------------------------------------------
 CREATE TABLE tryout_sessions (
     id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id     INT UNSIGNED NOT NULL,
@@ -159,9 +129,6 @@ CREATE TABLE tryout_sessions (
     CONSTRAINT fk_ts_tryout FOREIGN KEY (tryout_id) REFERENCES tryouts(id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ----------------------------------------------------------------
--- 10. EBOOKS
--- ----------------------------------------------------------------
 CREATE TABLE ebooks (
     id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     title           VARCHAR(255) NOT NULL,
@@ -180,9 +147,6 @@ CREATE TABLE ebooks (
         ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ----------------------------------------------------------------
--- 11. FORUM POSTS
--- ----------------------------------------------------------------
 CREATE TABLE forum_posts (
     id         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id    INT UNSIGNED NOT NULL,
@@ -198,9 +162,6 @@ CREATE TABLE forum_posts (
         ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ----------------------------------------------------------------
--- 12. FORUM REPLIES
--- ----------------------------------------------------------------
 CREATE TABLE forum_replies (
     id        INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     post_id   INT UNSIGNED NOT NULL,
@@ -212,9 +173,6 @@ CREATE TABLE forum_replies (
     CONSTRAINT fk_reply_user FOREIGN KEY (user_id) REFERENCES users(id)       ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ----------------------------------------------------------------
--- 13. SPEAKING SESSIONS
--- ----------------------------------------------------------------
 CREATE TABLE speaking_sessions (
     id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id     INT UNSIGNED NOT NULL,
@@ -226,9 +184,6 @@ CREATE TABLE speaking_sessions (
     CONSTRAINT fk_speak_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ----------------------------------------------------------------
--- 14. ADMIN ACTIVITY LOGS
--- ----------------------------------------------------------------
 CREATE TABLE admin_logs (
     id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     admin_id    INT UNSIGNED NOT NULL,
@@ -241,17 +196,12 @@ CREATE TABLE admin_logs (
     CONSTRAINT fk_log_admin FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ================================================================
--- SEED DATA
--- ================================================================
-
 -- Default admin account (password: Admin@12345)
 INSERT INTO users (name, email, password, role, plan, xp) VALUES
 ('Admin EngLight', 'admin@englight.id',
  '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uFutrnIdC',
  'admin', 'pro', 9999);
 
--- Default demo user (password: User@12345)
 INSERT INTO users (name, email, password, role, plan, xp) VALUES
 ('Budi Santoso', 'budi@student.com',
  '$2y$12$Lj6C/bfQJm.L0VBW97yb7OB2A78lBYOiAqNAFm3e0g1.V.a2xCe2W',

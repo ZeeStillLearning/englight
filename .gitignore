@@ -2,3 +2,13 @@ uploads/materi/*
 uploads/ebook/*
 !uploads/materi/.gitkeep
 !uploads/ebook/.gitkeep
+
+database.sql
+
+reset-password.php
+
+config.php
+
+.env
+.DS_Store
+Thumbs.db

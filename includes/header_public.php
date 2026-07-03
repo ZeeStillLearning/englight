@@ -64,6 +64,7 @@
       </a>
       <div class="hidden md:flex items-center gap-8">
         <a href="index.php#features" class="text-sm font-medium text-gray-600 hover:text-[#1B3F8B] transition-colors">Fitur</a>
+        <a href="index.php#about" class="text-sm font-medium text-gray-600 hover:text-[#1B3F8B] transition-colors">tentang</a>
         <a href="index.php#how"      class="text-sm font-medium text-gray-600 hover:text-[#1B3F8B] transition-colors">Cara Kerja</a>
         <a href="index.php#pricing"  class="text-sm font-medium text-gray-600 hover:text-[#1B3F8B] transition-colors">Harga</a>
       </div>

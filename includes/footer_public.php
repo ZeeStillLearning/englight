@@ -45,7 +45,7 @@
       </div>
     </div>
     <div class="border-t border-white/10 pt-8 text-center text-sm">
-      &copy; <?= date('Y') ?> EngLight — Universitas Sebelas Maret. Dibuat dengan ❤️ untuk pelajar Indonesia.
+      &copy; <?= date('Y') ?> EngLight — Universitas Sebelas Maret. Dibuat dengan Cinta untuk pelajar Indonesia.
     </div>
   </div>
 </footer>

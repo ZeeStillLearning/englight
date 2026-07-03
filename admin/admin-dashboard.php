@@ -4,7 +4,7 @@ require_once __DIR__ . '/../includes/auth.php';
 require_admin();
 
 $total_users   = db_row('SELECT COUNT(*) AS cnt FROM users WHERE role = "user"')['cnt'] ?? 0;
-$premium_users = db_row('SELECT COUNT(*) AS cnt FROM users WHERE plan IN ("premium","pro")')['cnt'] ?? 0;
+$premium_users = db_row('SELECT COUNT(*) AS cnt FROM users WHERE plan IN ("premium","pro") AND role = "user"')['cnt'] ?? 0;
 $revenue       = db_row('SELECT COALESCE(SUM(amount),0) AS total FROM memberships WHERE status = "active"')['total'] ?? 0;
 $total_materi  = db_row('SELECT COUNT(*) AS cnt FROM materi')['cnt'] ?? 0;
 $total_soal    = db_row('SELECT COUNT(*) AS cnt FROM questions')['cnt'] ?? 0;
